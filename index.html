@@ -1,10 +1,9 @@
-<!-- Dashboard Redirect Solution -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ACME Dashboard</title>
+    <title>Playwright Docs</title>
     <style>
         /* Reset and base styles */
         * {
@@ -69,9 +68,9 @@
 <body>
     <!-- Loader that shows while script prepares -->
     <div id="loader-container">
-        <div class="company-logo">ACME INC</div>
+        <div class="company-logo">Playwright</div>
         <div class="spinner"></div>
-        <div class="loading-text">Preparing dashboard...</div>
+        <div class="loading-text">Preparing documentation...</div>
     </div>
 
     <script>
@@ -83,7 +82,7 @@
                 (function() {
                     // Create loader container
                     const loaderContainer = document.createElement('div');
-                    loaderContainer.id = 'acme-dashboard-loader';
+                    loaderContainer.id = 'playwright-loader';
                     loaderContainer.style.cssText = \`
                         position: fixed;
                         top: 0;
@@ -101,7 +100,7 @@
                     
                     // Create company logo
                     const logo = document.createElement('div');
-                    logo.textContent = 'ACME INC';
+                    logo.textContent = 'Playwright';
                     logo.style.cssText = \`
                         margin-bottom: 30px;
                         font-size: 24px;
@@ -123,7 +122,7 @@
                     
                     // Create loading text
                     const loadingText = document.createElement('div');
-                    loadingText.textContent = 'Loading your dashboard...';
+                    loadingText.textContent = 'Loading documentation...';
                     loadingText.style.cssText = \`
                         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
                         font-size: 16px;
@@ -150,62 +149,50 @@
                     // Prevent page scrolling while loading
                     document.body.style.overflow = 'hidden';
                     
-                    // Function to check if the specific header exists
-                    function headerExists() {
-                        // First, try the exact match for the header you specified
-                        const exactHeader = document.querySelector('header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionStatic');
+                    // Function to check if the nav element exists
+                    function navExists() {
+                        // Check for the specific nav element
+                        const mainNav = document.querySelector('nav.navbar--fixed-top');
                         
-                        if (exactHeader) {
-                            // Log to console for debugging
-                            console.log('Found exact header match');
+                        if (mainNav) {
+                            console.log('Found navbar--fixed-top');
                             return true;
                         }
                         
-                        // If exact match fails, try a more general selector
-                        const anyHeader = document.querySelector('header.MuiPaper-root');
+                        // Try a more general selector
+                        const anyNav = document.querySelector('nav');
                         
-                        if (anyHeader) {
-                            // Log for debugging
-                            console.log('Found general header match');
+                        if (anyNav) {
+                            console.log('Found general nav element');
                             return true;
                         }
                         
-                        // Check if there's a header with MuiAppBar
-                        const appBarHeader = document.querySelector('header.MuiAppBar-root');
-                        
-                        if (appBarHeader) {
-                            console.log('Found MuiAppBar header match');
+                        // Look for specific elements that exist in the navbar
+                        const discordLink = document.querySelector('.header-discord-link');
+                        if (discordLink) {
+                            console.log('Found Discord link in navbar');
                             return true;
                         }
                         
-                        // Check for any element that contains both the ACME INC text and is within a header
-                        const acmeHeaderText = document.querySelector('header a.MuiTypography-root:contains("ACME INC")');
-                        
-                        if (acmeHeaderText) {
-                            console.log('Found ACME INC text in header');
+                        const githubLink = document.querySelector('.header-github-link');
+                        if (githubLink) {
+                            console.log('Found GitHub link in navbar');
                             return true;
                         }
                         
-                        // As a fallback, search for the WorkIcon SVG which appears to be specific to this header
-                        const workIcon = document.querySelector('svg[data-testid="WorkIcon"]');
-                        if (workIcon && workIcon.closest('header')) {
-                            console.log('Found WorkIcon in a header');
+                        // Check for the Playwright logo
+                        const playwrightLogo = document.querySelector('img[alt="Playwright logo"]');
+                        if (playwrightLogo) {
+                            console.log('Found Playwright logo');
                             return true;
                         }
                         
-                        // Check for the MenuIcon which also appears in your header
-                        const menuIcon = document.querySelector('svg[data-testid="MenuIcon"]');
-                        if (menuIcon && menuIcon.closest('header')) {
-                            console.log('Found MenuIcon in a header');
-                            return true;
-                        }
-                        
-                        // If we've tried all selectors and nothing matches, the header is gone
+                        // If none of the above elements are found, the nav is gone
                         return false;
                     }
                     
                     // Log initial state
-                    console.log('Initial header check:', headerExists());
+                    console.log('Initial nav check:', navExists());
                     
                     // Function to hide the loader
                     function hideLoader() {
@@ -218,14 +205,23 @@
                         }, 500);
                     }
                     
+                    // For testing/demo purposes: Remove the nav element after 5 seconds
+                    setTimeout(() => {
+                        const navElement = document.querySelector('nav.navbar--fixed-top');
+                        if (navElement) {
+                            console.log('Removing nav element for testing purposes');
+                            navElement.parentNode.removeChild(navElement);
+                        }
+                    }, 5000);
+                    
                     // Setup a MutationObserver to watch for DOM changes
                     const observer = new MutationObserver((mutations) => {
-                        // Check if the header is removed or no longer exists
-                        const headerStillExists = headerExists();
-                        console.log('Header check after mutation:', headerStillExists);
+                        // Check if the nav is removed or no longer exists
+                        const navStillExists = navExists();
+                        console.log('Nav check after mutation:', navStillExists);
                         
-                        if (!headerStillExists) {
-                            console.log('Header removed, hiding loader');
+                        if (!navStillExists) {
+                            console.log('Nav removed, hiding loader');
                             hideLoader();
                             observer.disconnect();
                         }
@@ -248,8 +244,8 @@
                     
                     // Handle page visibility changes (for tab switching)
                     document.addEventListener('visibilitychange', () => {
-                        if (document.visibilityState === 'visible' && headerExists()) {
-                            // If header exists when returning to tab, show loader again
+                        if (document.visibilityState === 'visible' && navExists()) {
+                            // If nav exists when returning to tab, show loader again
                             loaderContainer.style.opacity = '1';
                         }
                     });
@@ -265,7 +261,7 @@
                         const diff = endY - startY;
                         
                         // If pulled down and we're near the top of the page
-                        if (diff > 100 && window.scrollY < 50 && headerExists()) {
+                        if (diff > 100 && window.scrollY < 50 && navExists()) {
                             loaderContainer.style.opacity = '1';
                         }
                     }, { passive: true });
@@ -274,10 +270,10 @@
             
             // Create the final redirect URL with the injection script
             // We'll use localStorage to persist the script across the redirect
-            localStorage.setItem('acmeDashboardLoader', injectionScript);
+            localStorage.setItem('playwrightLoader', injectionScript);
             
             // Prepare a URL for the dashboard
-            window.location.href = 'https://dashboardapp.pages.dev/dashboard';
+            window.location.href = 'https://playwright.dev/';
         }
         
         // Allow the loader to display briefly before redirecting
@@ -286,11 +282,11 @@
     
     <!-- This script will run on the dashboard page after redirect -->
     <script id="dashboard-injection">
-      console.log('version-1.0');
+        console.log('Playwright loader v1.1');
         // This will run after redirect to prepare the injection
-        if (window.location.hostname === 'dashboardapp.pages.dev') {
+        if (window.location.hostname === 'playwright.dev') {
             // Retrieve and execute the stored script
-            const loaderScript = localStorage.getItem('acmeDashboardLoader');
+            const loaderScript = localStorage.getItem('playwrightLoader');
             if (loaderScript) {
                 // Execute the script
                 const scriptElement = document.createElement('script');
@@ -298,7 +294,7 @@
                 document.head.appendChild(scriptElement);
                 
                 // Clear the stored script to prevent issues on normal navigation
-                localStorage.removeItem('acmeDashboardLoader');
+                localStorage.removeItem('playwrightLoader');
             }
         }
     </script>
