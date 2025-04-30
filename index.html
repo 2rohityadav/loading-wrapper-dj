@@ -152,8 +152,60 @@
                     
                     // Function to check if the specific header exists
                     function headerExists() {
-                        return document.querySelector('header.MuiPaper-root.MuiAppBar-root');
+                        // First, try the exact match for the header you specified
+                        const exactHeader = document.querySelector('header.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorPrimary.MuiAppBar-positionStatic');
+                        
+                        if (exactHeader) {
+                            // Log to console for debugging
+                            console.log('Found exact header match');
+                            return true;
+                        }
+                        
+                        // If exact match fails, try a more general selector
+                        const anyHeader = document.querySelector('header.MuiPaper-root');
+                        
+                        if (anyHeader) {
+                            // Log for debugging
+                            console.log('Found general header match');
+                            return true;
+                        }
+                        
+                        // Check if there's a header with MuiAppBar
+                        const appBarHeader = document.querySelector('header.MuiAppBar-root');
+                        
+                        if (appBarHeader) {
+                            console.log('Found MuiAppBar header match');
+                            return true;
+                        }
+                        
+                        // Check for any element that contains both the ACME INC text and is within a header
+                        const acmeHeaderText = document.querySelector('header a.MuiTypography-root:contains("ACME INC")');
+                        
+                        if (acmeHeaderText) {
+                            console.log('Found ACME INC text in header');
+                            return true;
+                        }
+                        
+                        // As a fallback, search for the WorkIcon SVG which appears to be specific to this header
+                        const workIcon = document.querySelector('svg[data-testid="WorkIcon"]');
+                        if (workIcon && workIcon.closest('header')) {
+                            console.log('Found WorkIcon in a header');
+                            return true;
+                        }
+                        
+                        // Check for the MenuIcon which also appears in your header
+                        const menuIcon = document.querySelector('svg[data-testid="MenuIcon"]');
+                        if (menuIcon && menuIcon.closest('header')) {
+                            console.log('Found MenuIcon in a header');
+                            return true;
+                        }
+                        
+                        // If we've tried all selectors and nothing matches, the header is gone
+                        return false;
                     }
+                    
+                    // Log initial state
+                    console.log('Initial header check:', headerExists());
                     
                     // Function to hide the loader
                     function hideLoader() {
@@ -167,9 +219,13 @@
                     }
                     
                     // Setup a MutationObserver to watch for DOM changes
-                    const observer = new MutationObserver(() => {
+                    const observer = new MutationObserver((mutations) => {
                         // Check if the header is removed or no longer exists
-                        if (!headerExists()) {
+                        const headerStillExists = headerExists();
+                        console.log('Header check after mutation:', headerStillExists);
+                        
+                        if (!headerStillExists) {
+                            console.log('Header removed, hiding loader');
                             hideLoader();
                             observer.disconnect();
                         }
@@ -179,12 +235,13 @@
                     observer.observe(document.body, { 
                         childList: true,
                         subtree: true,
-                        attributes: false,
+                        attributes: true,
                         characterData: false
                     });
                     
                     // Set a fallback timeout (30 seconds)
                     setTimeout(() => {
+                        console.log('Timeout reached, hiding loader');
                         hideLoader();
                         observer.disconnect();
                     }, 30000);
@@ -229,6 +286,7 @@
     
     <!-- This script will run on the dashboard page after redirect -->
     <script id="dashboard-injection">
+      console.log('version-1.0');
         // This will run after redirect to prepare the injection
         if (window.location.hostname === 'dashboardapp.pages.dev') {
             // Retrieve and execute the stored script
