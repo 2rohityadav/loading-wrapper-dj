@@ -1,0 +1,248 @@
+<!-- Dashboard Redirect Solution -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ACME Dashboard</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: white;
+        }
+        
+        /* Loader styles */
+        #loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            z-index: 10000;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+            margin-top: 12px;
+        }
+        
+        .company-logo {
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader that shows while script prepares -->
+    <div id="loader-container">
+        <div class="company-logo">ACME INC</div>
+        <div class="spinner"></div>
+        <div class="loading-text">Preparing dashboard...</div>
+    </div>
+
+    <script>
+        // Main function to create and inject the loader script
+        function prepareDashboardRedirect() {
+            // Create the script to inject into the dashboard page
+            const injectionScript = `
+                // Create and inject a loader
+                (function() {
+                    // Create loader container
+                    const loaderContainer = document.createElement('div');
+                    loaderContainer.id = 'acme-dashboard-loader';
+                    loaderContainer.style.cssText = \`
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: white;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 10000;
+                        transition: opacity 0.5s ease;
+                    \`;
+                    
+                    // Create company logo
+                    const logo = document.createElement('div');
+                    logo.textContent = 'ACME INC';
+                    logo.style.cssText = \`
+                        margin-bottom: 30px;
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #333;
+                    \`;
+                    
+                    // Create spinner
+                    const spinner = document.createElement('div');
+                    spinner.style.cssText = \`
+                        width: 40px;
+                        height: 40px;
+                        border: 4px solid rgba(0, 0, 0, 0.1);
+                        border-radius: 50%;
+                        border-top-color: #3498db;
+                        animation: spin 1s linear infinite;
+                        margin-bottom: 20px;
+                    \`;
+                    
+                    // Create loading text
+                    const loadingText = document.createElement('div');
+                    loadingText.textContent = 'Loading your dashboard...';
+                    loadingText.style.cssText = \`
+                        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+                        font-size: 16px;
+                        color: #333;
+                        text-align: center;
+                    \`;
+                    
+                    // Add animation keyframes
+                    const style = document.createElement('style');
+                    style.textContent = \`
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    \`;
+                    
+                    // Append elements
+                    document.head.appendChild(style);
+                    loaderContainer.appendChild(logo);
+                    loaderContainer.appendChild(spinner);
+                    loaderContainer.appendChild(loadingText);
+                    document.body.appendChild(loaderContainer);
+                    
+                    // Prevent page scrolling while loading
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Function to check if the specific header exists
+                    function headerExists() {
+                        return document.querySelector('header.MuiPaper-root.MuiAppBar-root');
+                    }
+                    
+                    // Function to hide the loader
+                    function hideLoader() {
+                        loaderContainer.style.opacity = '0';
+                        setTimeout(() => {
+                            if (loaderContainer.parentNode) {
+                                loaderContainer.parentNode.removeChild(loaderContainer);
+                                document.body.style.overflow = '';
+                            }
+                        }, 500);
+                    }
+                    
+                    // Setup a MutationObserver to watch for DOM changes
+                    const observer = new MutationObserver(() => {
+                        // Check if the header is removed or no longer exists
+                        if (!headerExists()) {
+                            hideLoader();
+                            observer.disconnect();
+                        }
+                    });
+                    
+                    // Start observing the document
+                    observer.observe(document.body, { 
+                        childList: true,
+                        subtree: true,
+                        attributes: false,
+                        characterData: false
+                    });
+                    
+                    // Set a fallback timeout (30 seconds)
+                    setTimeout(() => {
+                        hideLoader();
+                        observer.disconnect();
+                    }, 30000);
+                    
+                    // Handle page visibility changes (for tab switching)
+                    document.addEventListener('visibilitychange', () => {
+                        if (document.visibilityState === 'visible' && headerExists()) {
+                            // If header exists when returning to tab, show loader again
+                            loaderContainer.style.opacity = '1';
+                        }
+                    });
+                    
+                    // Handle pull-to-refresh
+                    let startY;
+                    document.addEventListener('touchstart', function(e) {
+                        startY = e.touches[0].clientY;
+                    }, { passive: true });
+                    
+                    document.addEventListener('touchend', function(e) {
+                        const endY = e.changedTouches[0].clientY;
+                        const diff = endY - startY;
+                        
+                        // If pulled down and we're near the top of the page
+                        if (diff > 100 && window.scrollY < 50 && headerExists()) {
+                            loaderContainer.style.opacity = '1';
+                        }
+                    }, { passive: true });
+                })();
+            `;
+            
+            // Create the final redirect URL with the injection script
+            // We'll use localStorage to persist the script across the redirect
+            localStorage.setItem('acmeDashboardLoader', injectionScript);
+            
+            // Prepare a URL for the dashboard
+            window.location.href = 'https://dashboardapp.pages.dev/dashboard';
+        }
+        
+        // Allow the loader to display briefly before redirecting
+        setTimeout(prepareDashboardRedirect, 1500);
+    </script>
+    
+    <!-- This script will run on the dashboard page after redirect -->
+    <script id="dashboard-injection">
+        // This will run after redirect to prepare the injection
+        if (window.location.hostname === 'dashboardapp.pages.dev') {
+            // Retrieve and execute the stored script
+            const loaderScript = localStorage.getItem('acmeDashboardLoader');
+            if (loaderScript) {
+                // Execute the script
+                const scriptElement = document.createElement('script');
+                scriptElement.textContent = loaderScript;
+                document.head.appendChild(scriptElement);
+                
+                // Clear the stored script to prevent issues on normal navigation
+                localStorage.removeItem('acmeDashboardLoader');
+            }
+        }
+    </script>
+</body>
+</html>
