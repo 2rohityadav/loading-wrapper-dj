@@ -61,6 +61,8 @@
             100% { transform: rotate(360deg); }
         }
     </style>
+    <!-- Preload the script to ensure it's available as early as possible -->
+    <script src="loader.js" defer></script>
 </head>
 <body>
     <div id="loader-container">
@@ -68,7 +70,5 @@
         <div class="spinner"></div>
         <div class="loading-text">Loading documentation...</div>
     </div>
-
-    <script src="loader.js"></script>
 </body>
 </html>
