@@ -1,74 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Loading Playwright Documentation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: white;
-        }
-        
-        #loader-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: white;
-            z-index: 10000;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top-color: #3498db;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        .company-logo {
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .loading-text {
-            font-size: 16px;
-            color: #333;
-            text-align: center;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-    <!-- Preload the script to ensure it's available as early as possible -->
-    <script src="loader.js" defer></script>
+  <meta charset="UTF-8" />
+  <title>Playwright Site Wrapper</title>
+  <style>
+    iframe {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+  </style>
 </head>
 <body>
-    <div id="loader-container">
-        <div class="company-logo">Playwright</div>
-        <div class="spinner"></div>
-        <div class="loading-text">Loading documentation...</div>
-    </div>
+  <iframe id="myFrame" src="/my-local-copy.html"></iframe>
+
+  <script>
+  const iframe = document.getElementById('myFrame');
+  iframe.onload = () => {
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    const nav = iframeDoc.querySelector('nav[aria-label="Main"]');
+    if (nav) {
+      nav.remove();
+      console.log("✅ Navbar removed.");
+    }
+  };
+</script>
 </body>
 </html>
