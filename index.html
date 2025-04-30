@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Playwright Docs</title>
+    <title>Loading...</title>
     <style>
-        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
@@ -16,11 +15,10 @@
             height: 100%;
             width: 100%;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background-color: white;
         }
         
-        /* Loader styles */
         #loader-container {
             position: fixed;
             top: 0;
@@ -45,13 +43,6 @@
             margin-bottom: 20px;
         }
         
-        .loading-text {
-            font-size: 16px;
-            color: #333;
-            text-align: center;
-            margin-top: 12px;
-        }
-        
         .company-logo {
             margin-bottom: 30px;
             font-size: 24px;
@@ -59,244 +50,24 @@
             color: #333;
         }
         
+        .loading-text {
+            font-size: 16px;
+            color: #333;
+            text-align: center;
+        }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
     </style>
+    <script src="loader.js"></script>
 </head>
 <body>
-    <!-- Loader that shows while script prepares -->
     <div id="loader-container">
         <div class="company-logo">Playwright</div>
         <div class="spinner"></div>
-        <div class="loading-text">Preparing documentation...</div>
+        <div class="loading-text">Loading documentation...</div>
     </div>
-
-    <script>
-        // Main function to create and inject the loader script
-        function prepareDashboardRedirect() {
-            // Create the script to inject into the dashboard page
-            const injectionScript = `
-                // Create and inject a loader
-                (function() {
-                    // Create loader container
-                    const loaderContainer = document.createElement('div');
-                    loaderContainer.id = 'playwright-loader';
-                    loaderContainer.style.cssText = \`
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background-color: white;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        z-index: 10000;
-                        transition: opacity 0.5s ease;
-                    \`;
-                    
-                    // Create company logo
-                    const logo = document.createElement('div');
-                    logo.textContent = 'Playwright';
-                    logo.style.cssText = \`
-                        margin-bottom: 30px;
-                        font-size: 24px;
-                        font-weight: bold;
-                        color: #333;
-                    \`;
-                    
-                    // Create spinner
-                    const spinner = document.createElement('div');
-                    spinner.style.cssText = \`
-                        width: 40px;
-                        height: 40px;
-                        border: 4px solid rgba(0, 0, 0, 0.1);
-                        border-radius: 50%;
-                        border-top-color: #3498db;
-                        animation: spin 1s linear infinite;
-                        margin-bottom: 20px;
-                    \`;
-                    
-                    // Create loading text
-                    const loadingText = document.createElement('div');
-                    loadingText.textContent = 'Loading documentation...';
-                    loadingText.style.cssText = \`
-                        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-                        font-size: 16px;
-                        color: #333;
-                        text-align: center;
-                    \`;
-                    
-                    // Add animation keyframes
-                    const style = document.createElement('style');
-                    style.textContent = \`
-                        @keyframes spin {
-                            0% { transform: rotate(0deg); }
-                            100% { transform: rotate(360deg); }
-                        }
-                    \`;
-                    
-                    // Append elements
-                    document.head.appendChild(style);
-                    loaderContainer.appendChild(logo);
-                    loaderContainer.appendChild(spinner);
-                    loaderContainer.appendChild(loadingText);
-                    document.body.appendChild(loaderContainer);
-                    
-                    // Prevent page scrolling while loading
-                    document.body.style.overflow = 'hidden';
-                    
-                    // Function to check if the nav element exists
-                    function navExists() {
-                        // Check for the specific nav element
-                        const mainNav = document.querySelector('nav.navbar--fixed-top');
-                        
-                        if (mainNav) {
-                            console.log('Found navbar--fixed-top');
-                            return true;
-                        }
-                        
-                        // Try a more general selector
-                        const anyNav = document.querySelector('nav');
-                        
-                        if (anyNav) {
-                            console.log('Found general nav element');
-                            return true;
-                        }
-                        
-                        // Look for specific elements that exist in the navbar
-                        const discordLink = document.querySelector('.header-discord-link');
-                        if (discordLink) {
-                            console.log('Found Discord link in navbar');
-                            return true;
-                        }
-                        
-                        const githubLink = document.querySelector('.header-github-link');
-                        if (githubLink) {
-                            console.log('Found GitHub link in navbar');
-                            return true;
-                        }
-                        
-                        // Check for the Playwright logo
-                        const playwrightLogo = document.querySelector('img[alt="Playwright logo"]');
-                        if (playwrightLogo) {
-                            console.log('Found Playwright logo');
-                            return true;
-                        }
-                        
-                        // If none of the above elements are found, the nav is gone
-                        return false;
-                    }
-                    
-                    // Log initial state
-                    console.log('Initial nav check:', navExists());
-                    
-                    // Function to hide the loader
-                    function hideLoader() {
-                        loaderContainer.style.opacity = '0';
-                        setTimeout(() => {
-                            if (loaderContainer.parentNode) {
-                                loaderContainer.parentNode.removeChild(loaderContainer);
-                                document.body.style.overflow = '';
-                            }
-                        }, 500);
-                    }
-                    
-                    // For testing/demo purposes: Remove the nav element after 5 seconds
-                    setTimeout(() => {
-                        const navElement = document.querySelector('nav.navbar--fixed-top');
-                        if (navElement) {
-                            console.log('Removing nav element for testing purposes');
-                            navElement.parentNode.removeChild(navElement);
-                        }
-                    }, 5000);
-                    
-                    // Setup a MutationObserver to watch for DOM changes
-                    const observer = new MutationObserver((mutations) => {
-                        // Check if the nav is removed or no longer exists
-                        const navStillExists = navExists();
-                        console.log('Nav check after mutation:', navStillExists);
-                        
-                        if (!navStillExists) {
-                            console.log('Nav removed, hiding loader');
-                            hideLoader();
-                            observer.disconnect();
-                        }
-                    });
-                    
-                    // Start observing the document
-                    observer.observe(document.body, { 
-                        childList: true,
-                        subtree: true,
-                        attributes: true,
-                        characterData: false
-                    });
-                    
-                    // Set a fallback timeout (30 seconds)
-                    setTimeout(() => {
-                        console.log('Timeout reached, hiding loader');
-                        hideLoader();
-                        observer.disconnect();
-                    }, 30000);
-                    
-                    // Handle page visibility changes (for tab switching)
-                    document.addEventListener('visibilitychange', () => {
-                        if (document.visibilityState === 'visible' && navExists()) {
-                            // If nav exists when returning to tab, show loader again
-                            loaderContainer.style.opacity = '1';
-                        }
-                    });
-                    
-                    // Handle pull-to-refresh
-                    let startY;
-                    document.addEventListener('touchstart', function(e) {
-                        startY = e.touches[0].clientY;
-                    }, { passive: true });
-                    
-                    document.addEventListener('touchend', function(e) {
-                        const endY = e.changedTouches[0].clientY;
-                        const diff = endY - startY;
-                        
-                        // If pulled down and we're near the top of the page
-                        if (diff > 100 && window.scrollY < 50 && navExists()) {
-                            loaderContainer.style.opacity = '1';
-                        }
-                    }, { passive: true });
-                })();
-            `;
-            
-            // Create the final redirect URL with the injection script
-            // We'll use localStorage to persist the script across the redirect
-            localStorage.setItem('playwrightLoader', injectionScript);
-            
-            // Prepare a URL for the dashboard
-            window.location.href = 'https://playwright.dev/';
-        }
-        
-        // Allow the loader to display briefly before redirecting
-        setTimeout(prepareDashboardRedirect, 1500);
-    </script>
-    
-    <!-- This script will run on the dashboard page after redirect -->
-    <script id="dashboard-injection">
-        console.log('Playwright loader v1.1');
-        // This will run after redirect to prepare the injection
-        if (window.location.hostname === 'playwright.dev') {
-            // Retrieve and execute the stored script
-            const loaderScript = localStorage.getItem('playwrightLoader');
-            if (loaderScript) {
-                // Execute the script
-                const scriptElement = document.createElement('script');
-                scriptElement.textContent = loaderScript;
-                document.head.appendChild(scriptElement);
-                
-                // Clear the stored script to prevent issues on normal navigation
-                localStorage.removeItem('playwrightLoader');
-            }
-        }
-    </script>
 </body>
 </html>
