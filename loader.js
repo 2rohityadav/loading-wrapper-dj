@@ -1,6 +1,6 @@
 // Simple loader script that injects a loader and removes nav element on playwright.dev
 (function () {
-  console.log('wrapper-dj-version: v1.4');
+  console.log('wrapper-dj-version: v1.5');
 
   // Function to inject the loader directly on the playwright.dev page
   function injectLoader() {
@@ -58,16 +58,35 @@
       console.log('Attempting to remove nav element');
 
       try {
-        // Try to find and remove the navigation element with specific class
-        const mainNav = document.querySelector('nav.navbar--fixed-top');
+        // Try to find the navigation element with the exact class from the DOM
+        const mainNav = document.querySelector('nav.navbar.navbar--fixed-top');
         if (mainNav) {
           mainNav.remove();
           console.log('Nav element removed successfully');
           hideLoader();
         } else {
-          // Fallback to trying any nav element
-          console.log('Nav element not found with specific class, trying general nav');
+          // Try alternative selectors based on the Playwright site DOM structure
+          console.log('Nav element not found with specific class, trying alternative selectors');
 
+          // Try with partial class match
+          const navbarFixedTop = document.querySelector('nav[class*="navbar--fixed-top"]');
+          if (navbarFixedTop) {
+            navbarFixedTop.remove();
+            console.log('Nav element removed using partial class match');
+            hideLoader();
+            return;
+          }
+
+          // Try with aria-label
+          const navWithAriaLabel = document.querySelector('nav[aria-label="Main"]');
+          if (navWithAriaLabel) {
+            navWithAriaLabel.remove();
+            console.log('Nav element removed using aria-label');
+            hideLoader();
+            return;
+          }
+
+          // Fallback to any nav as last resort
           const anyNav = document.querySelector('nav');
           if (anyNav) {
             anyNav.remove();
